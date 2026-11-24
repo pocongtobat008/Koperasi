@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Laporan Pinjaman{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-header-title">Laporan Pinjaman</div>
+    <div class="page-header-sub">Status pinjaman dan cicilan jatuh tempo</div>
+  </div>
+</div>
+
+<!-- Box summary: status summary -->
+<div class="box-summary" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))" role="region" aria-label="Ringkasan pinjaman">
+  {% for s in status_summary %}
+  <div class="stat-card" style="min-height:110px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#eff6ff;border:1px solid #bfdbfe">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.75" width="20" height="20"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">{{ s.status|title }}</div>
+      <div class="stat-value">{{ s.jumlah }}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">Rp {{ "{:,.0f}".format(s.total or 0) }}</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card table-wrap" style="margin-top:var(--spacing-md)">
+  <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border)">
+    <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em">Status Pinjaman</h2>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>Jumlah</th>
+        <th>Total Nilai</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in status_summary %}
+      <tr>
+        <td style="font-weight:500">{{ s.status|title }}</td>
+        <td>{{ s.jumlah }}</td>
+        <td style="font-weight:700">Rp {{ "{:,.0f}".format(s.total or 0) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card table-wrap" style="margin-top:var(--spacing-md)">
+  <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border)">
+    <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em">Cicilan Jatuh Tempo</h2>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Nomor</th>
+        <th>Anggota</th>
+        <th>Jatuh Tempo</th>
+        <th>Jumlah</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in cicilan %}
+      <tr>
+        <td class="text-mono" style="font-weight:600">{{ c.no_pinjaman }}</td>
+        <td style="font-weight:500">{{ c.nama }}</td>
+        <td style="white-space:nowrap">{{ c.tanggal_jatuh_tempo }}</td>
+        <td style="font-weight:700">Rp {{ "{:,.0f}".format(c.jumlah_cicilan) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="empty-state">Tidak ada cicilan jatuh tempo</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

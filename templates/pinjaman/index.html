@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Pinjaman{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-header-title">Pinjaman</div>
+    <div class="page-header-sub">Kelola pengajuan dan status pinjaman</div>
+  </div>
+  {% if current_user.role == 'admin' %}<a class="btn btn-primary" href="{{ url_for('pinjaman.ajukan') }}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 4v16m8-8H4"/></svg>
+    Ajukan Pinjaman
+  </a>{% endif %}
+</div>
+
+<!-- Box summary: ringkasan pinjaman -->
+<div class="box-summary" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))" role="region" aria-label="Ringkasan pinjaman">
+  <div class="stat-card" style="min-height:120px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#eff6ff;border:1px solid #bfdbfe">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.75" width="20" height="20"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Pinjaman Aktif</div>
+      <div class="stat-value">{{ pinjaman|length }}</div>
+      <div class="stat-hint">Pinjaman belum lunas</div>
+    </div>
+  </div>
+  <div class="stat-card" style="min-height:120px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#fff7ed;border:1px solid #f6e05e">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.75" width="20" height="20"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Menunggu Disetujui</div>
+      <div class="stat-value">{{ pinjaman|length }}</div>
+      <div class="stat-hint">Menunggu persetujuan admin</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em">Daftar Pinjaman</h2>
+      <p style="font-size:13px;color:var(--muted);margin-top:4px">{{ pinjaman|length }} data pinjaman</p>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Nomor</th>
+          <th>Anggota</th>
+          <th>Jenis</th>
+          <th>Jumlah</th>
+          <th>Sisa</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pinjaman %}
+        <tr>
+          <td class="text-mono" style="font-weight:600">{{ p.no_pinjaman }}</td>
+          <td>
+            <div style="font-weight:500;font-size:14px">{{ p.nama }}</div>
+            <div style="font-size:11px;color:var(--muted)">{{ p.no_anggota }}</div>
+          </td>
+          <td style="font-weight:600">
+            {% if p.jenis_nama %}
+              {{ p.jenis_nama }}
+            {% else %}
+              <span class="badge badge-neutral">Belum ditentukan</span>
+            {% endif %}
+          </td>
+          <td style="font-weight:600">Rp {{ "{:,.0f}".format(p.jumlah_pinjaman) }}</td>
+          <td style="font-weight:600;color:{% if p.sisa_pinjaman > 0 %}var(--good){% else %}var(--bad){% endif %}">
+            Rp {{ "{:,.0f}".format(p.sisa_pinjaman) }}
+          </td>
+          <td>
+            <span class="badge {% if p.status=='disetujui' %}badge-good{% elif p.status=='diajukan' %}badge-warn{% elif p.status=='ditolak' %}badge-bad{% else %}badge-neutral{% endif %}">
+              {{ p.status|title }}
+            </span>
+          </td>
+          <td>
+            <a href="{{ url_for('pinjaman.detail', id=p.id) }}" class="btn btn-secondary btn-xs">Detail</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty-state">Belum ada data pinjaman</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

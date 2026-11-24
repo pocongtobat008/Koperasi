@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Masuk{% endblock %}
+{% block auth_content %}
+<main class="min-h-screen flex" style="background:#F8FAFC">
+  <!-- Left panel: brand + flat illustration -->
+  <div class="hidden lg:flex flex-col justify-between" style="width:420px;flex-shrink:0;background:#0F3D3A;padding:48px 32px;border-right:1px solid #164E4A;color:#F8FAFC">
+    <div style="margin-bottom:40px">
+      <div class="flex items-center gap-4" style="margin-bottom:16px">
+        <div style="width:56px;height:56px;border-radius:14px;background:#14B8A6;color:#fff;display:grid;place-items:center;box-shadow:0 8px 24px rgba(20,184,166,.25)">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" aria-hidden="true"><path d="M6 14.5 16 6l10 8.5V26H6V14.5Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M12 26v-7h8v7M10 14h12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div style="font-size:28px;font-weight:800;line-height:1.1;letter-spacing:-.02em">Koperasi</div>
+          <div style="font-size:28px;font-weight:800;line-height:1.1;letter-spacing:-.02em">Sejahtera</div>
+        </div>
+      </div>
+      <div style="width:48px;height:3px;background:#14B8A6;border-radius:2px;margin-bottom:16px"></div>
+    </div>
+    <p style="font-size:16px;color:#CCFBF1;line-height:1.7;margin-bottom:40px">Satu ruang untuk memantau simpanan, pinjaman, dan laporan keanggotaan dengan tenang.</p>
+    <!-- Flat illustration (sederhana, tanpa gradien/glow) -->
+    <svg viewBox="0 0 400 260" class="illustration" style="width:100%;height:auto;margin-top:auto" aria-hidden="true">
+      <rect width="400" height="260" fill="#0F3D3A" rx="0"/>
+      <!-- Toko/gedung -->
+      <rect x="120" y="120" width="80" height="90" fill="#E5E7EB" rx="8"/>
+      <rect x="140" y="100" width="40" height="20" fill="#F59E0B" rx="4"/>
+      <rect x="120" y="120" width="16" height="30" fill="#CBD5E1" rx="2"/>
+      <rect x="164" y="120" width="16" height="30" fill="#CBD5E1" rx="2"/>
+      <rect x="120" y="160" width="18" height="12" fill="#8B5CF6" rx="2"/>
+      <rect x="142" y="160" width="18" height="12" fill="#8B5CF6" rx="2"/>
+      <!-- Tabung simpanan -->
+      <rect x="240" y="140" width="50" height="70" fill="#E5E7EB" rx="12"/>
+      <rect x="240" y="140" width="50" height="16" fill="#F59E0B" rx="12"/>
+      <line x1="265" y1="165" x2="265" y2="205" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
+      <!-- Tanda plus -->
+      <circle cx="265" cy="205" r="14" fill="#FBBF24"/>
+      <rect x="259" y="199" width="4" height="12" fill="#1E293B"/>
+      <rect x="259" y="199" width="12" height="4" fill="#1E293B"/>
+      <!-- Petir -->
+      <path d="M180 40 L210 60 L200 60 L230 100" stroke="#F59E0B" stroke-width="3" fill="none"/>
+    </svg>
+    <p class="auth-credit"><a class="brand-credit" href="https://be-tech.web.id" target="_blank" rel="noopener">© 2026 Bi-Tech.id</a></p>
+  </div>
+
+  <!-- Right panel: form -->
+  <div class="flex-1 flex flex-col items-center justify-center p-6 sm:p-10">
+    <div style="width:100%;max-width:400px">
+      <div class="lg:hidden flex items-center gap-4" style="margin-bottom:32px">
+        <div style="width:48px;height:48px;border-radius:12px;background:var(--primary);color:#fff;display:grid;place-items:center;box-shadow:0 4px 16px rgba(15,118,110,.2)">
+          <svg viewBox="0 0 32 32" width="28" height="28" fill="none" aria-hidden="true"><path d="M6 14.5 16 6l10 8.5V26H6V14.5Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M12 26v-7h8v7M10 14h12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <strong style="font-size:20px;font-weight:800;letter-spacing:-.01em">Koperasi</strong>
+          <div style="font-size:13px;color:var(--muted);font-weight:500">Sejahtera</div>
+        </div>
+      </div>
+      <h2 style="font-size:28px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em;color:var(--ink)">Selamat datang kembali</h2>
+      <p style="font-size:15px;color:var(--muted);margin-bottom:32px">Masuk dengan akun yang terdaftar</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="flash flash-{{ 'error' if category == 'error' else 'success' if category == 'success' else 'info' }}" role="alert">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="post" class="space-y-5">
+        <div>
+          <label class="label" for="username">Nama pengguna</label>
+          <div style="position:relative">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="position:absolute;left:12px;top:14px;opacity:.5"><path d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input id="username" name="username" type="text" autocomplete="username" class="field pl-9" placeholder="Masukkan nama pengguna" required autofocus style="padding-left:40px">
+          </div>
+        </div>
+        <div>
+          <div style="position:relative">
+            <label class="label" for="password" style="margin-bottom:0">Kata sandi</label>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="position:absolute;left:12px;top:38px;opacity:.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><path d="M12 10v4M12 16v4"/></svg>
+            <input id="password" name="password" type="password" autocomplete="current-password" class="field pl-9" placeholder="Masukkan kata sandi" required style="padding-left:40px">
+          </div>
+        </div>
+        <button class="btn btn-primary w-full" type="submit" style="width:100%;margin-top:8px">Masuk</button>
+      </form>
+      <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted)">
+        Atau login dengan NIK anggota: <a href="{{ url_for('auth.login_anggota') }}" style="font-weight:600;color:var(--primary)">Login Anggota</a>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

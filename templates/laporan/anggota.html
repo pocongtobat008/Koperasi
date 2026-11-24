@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Laporan Anggota{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-header-title">Laporan Anggota</div>
+    <div class="page-header-sub">Status dan anggota baru bulan ini</div>
+  </div>
+</div>
+
+<!-- Box summary: 3 stat cards -->
+<div class="box-summary" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))" role="region" aria-label="Ringkasan anggota">
+  <div class="stat-card" style="min-height:110px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#eff6ff;border:1px solid #bfdbfe">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.75" width="20" height="20"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Total Anggota</div>
+      <div class="stat-value">{{ stats.total or 0 }}</div>
+    </div>
+  </div>
+  <div class="stat-card" style="min-height:110px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#ecfdf5;border:1px solid #a7f3d0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.75" width="20" height="20"><path d="M22 11.08h-2a2 2 0 00-2-2v-8a2 2 0 00-2 2v8a2 2 0 002 2h2a2 2 0 004 0 2 2 0 004 0v-9a2 2 0 00-2-2z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Aktif</div>
+      <div class="stat-value">{{ stats.aktif or 0 }}</div>
+    </div>
+  </div>
+  <div class="stat-card" style="min-height:110px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#f1f5f9;border:1px solid #cbd5e1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="1.75" width="20" height="20"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Non-Aktif</div>
+      <div class="stat-value">{{ stats.non_aktif or 0 }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="card table-wrap" style="margin-top:var(--spacing-md)">
+  <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border)">
+    <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em">Anggota Baru Bulan Ini</h2>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>No Anggota</th>
+        <th>Nama</th>
+        <th>Tanggal Bergabung</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in anggota_baru %}
+      <tr>
+        <td class="text-mono" style="font-weight:600">{{ a.no_anggota }}</td>
+        <td style="font-weight:500">{{ a.nama }}</td>
+        <td>{{ a.tanggal_bergabung }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3" class="empty-state">Belum ada anggota baru bulan ini</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Detail Anggota{% endblock %}
+{% block content %}
+
+<div class="mb-6">
+  <a href="{{ url_for('anggota.index') }}" style="font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M15 18l-6-6 6-6"/></svg>
+    Kembali
+  </a>
+</div>
+
+<!-- Box summary: profil ringkas -->
+<div class="box-summary" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))" role="region" aria-label="Ringkasan anggota">
+  <div class="stat-card" style="min-height:110px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#eff6ff;border:1px solid #bfdbfe">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.75" width="20" height="20"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">No Anggota</div>
+      <div class="stat-value text-mono" style="font-size:18px">{{ anggota.no_anggota }}</div>
+    </div>
+  </div>
+  <div class="stat-card" style="min-height:110px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#ecfdf5;border:1px solid #a7f3d0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.75" width="20" height="20"><path d="M22 11.08h-2a2 2 0 00-2-2v-8a2 2 0 00-2 2v8a2 2 0 002 2h2a2 2 0 004 0 2 2 0 004 0v-9a2 2 0 00-2-2z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Status</div>
+      <div class="stat-value" style="font-size:18px">{{ anggota.status|title }}</div>
+    </div>
+  </div>
+  <div class="stat-card" style="min-height:110px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#fff7ed;border:1px solid #f6e05e">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.75" width="20" height="20"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Pinjaman</div>
+      <div class="stat-value" style="font-size:18px">{{ pinjaman|length }}</div>
+    </div>
+  </div>
+  <div class="stat-card" style="min-height:110px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#fef2f2;border:1px solid #f87171">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.75" width="20" height="20"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Simpanan</div>
+      <div class="stat-value" style="font-size:18px">{{ simpanan|length }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="dash-bottom" style="display:grid;grid-template-columns:1fr;gap:var(--spacing-md)">
+  <!-- Data anggota -->
+  <section class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border)">
+      <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em">Data Anggota</h2>
+      {% if current_user.role == 'admin' %}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+        <a href="{{ url_for('anggota.edit', id=anggota.id) }}" class="btn btn-secondary btn-sm">Edit</a>
+        <form method="post" action="{{ url_for('anggota.ubah_status', id=anggota.id) }}" style="display:inline">
+          <input type="hidden" name="status" value="{{ 'non-aktif' if anggota.status == 'aktif' else 'aktif' }}">
+          <button class="btn btn-secondary btn-sm" type="submit">{{ 'Nonaktifkan' if anggota.status == 'aktif' else 'Aktifkan' }}</button>
+        </form>
+        {% if current_user.username == 'superadmin' and anggota.status == 'non-aktif' %}
+        <form method="post" action="{{ url_for('anggota.hapus', id=anggota.id) }}" style="display:inline" onsubmit="return confirm('Hapus permanen anggota ini? Data yang sudah dihapus tidak dapat dipulihkan.')">
+          <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
+        </form>
+        {% endif %}
+      </div>
+      {% else %}
+      <a href="{{ url_for('auth.profil') }}" class="btn btn-secondary btn-sm">Profil & Password</a>
+      {% endif %}
+    </div>
+    <div style="padding:var(--spacing-lg) 24px">
+      <div class="form-grid form-grid-2" style="gap:var(--spacing-md)">
+        <div><div class="stat-label">Nama Lengkap</div><div style="font-weight:600;margin-top:4px">{{ anggota.nama }}</div></div>
+        <div><div class="stat-label">NIK</div><div style="font-weight:600;margin-top:4px">{{ anggota.nik }}</div></div>
+        <div><div class="stat-label">Telepon</div><div style="font-weight:600;margin-top:4px">{{ anggota.telepon or '-' }}</div></div>
+        <div><div class="stat-label">Email</div><div style="font-weight:600;margin-top:4px">{{ anggota.email or '-' }}</div></div>
+        <div class="md:col-span-2"><div class="stat-label">Alamat</div><div style="font-weight:600;margin-top:4px">{{ anggota.alamat or '-' }}</div></div>
+        <div><div class="stat-label">Pekerjaan</div><div style="font-weight:600;margin-top:4px">{{ anggota.pekerjaan or '-' }}</div></div>
+        <div><div class="stat-label">Tanggal Lahir</div><div style="font-weight:600;margin-top:4px">{{ anggota.tanggal_lahir or '-' }}</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Simpanan -->
+  <section class="card">
+    <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border)">
+      <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em">Simpanan</h2>
+    </div>
+    <div style="padding:var(--spacing-lg) 24px">
+      {% for s in simpanan %}
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #f8fafc">
+        <div>
+          <div style="font-weight:600">{{ s.jenis_nama }}</div>
+          <div style="font-size:12px;color:var(--muted)">Rp {{ "{:,.0f}".format(s.saldo) }}</div>
+        </div>
+        <a href="{{ url_for('simpanan.riwayat', id=s.id) }}" class="btn btn-secondary btn-xs">Riwayat</a>
+      </div>
+      {% else %}
+      <div class="empty-state">Belum ada simpanan</div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Riwayat pinjaman -->
+  <section class="card">
+    <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border)">
+      <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em">Riwayat Pinjaman</h2>
+    </div>
+    <div style="padding:var(--spacing-lg) 24px">
+      {% for p in pinjaman %}
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #f8fafc">
+        <div>
+          <div style="font-weight:600">{{ p.no_pinjaman }}</div>
+          <div style="font-size:12px;color:var(--muted)">Rp {{ "{:,.0f}".format(p.jumlah_pinjaman) }} · Sisa Rp {{ "{:,.0f}".format(p.sisa_pinjaman) }}</div>
+        </div>
+        <span class="badge {% if p.status == 'disetujui' %}badge-good{% elif p.status == 'lunas' %}badge-good{% elif p.status == 'ditolak' %}badge-bad{% else %}badge-warn{% endif %}">{{ p.status|title }}</span>
+      </div>
+      {% else %}
+      <div class="empty-state">Belum ada pinjaman</div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+{% endblock %}

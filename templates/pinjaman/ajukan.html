@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Ajukan Pinjaman{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-header-title">Ajukan Pinjaman</div>
+    <div class="page-header-sub">Ajukan pinjaman untuk anggota</div>
+  </div>
+</div>
+
+<div class="card" style="max-width:640px;padding:28px 24px">
+  <form method="post" class="space-y-5">
+    <div>
+      <label class="label" for="anggota_id">Anggota</label>
+      <select id="anggota_id" name="anggota_id" class="field" required>
+        {% for a in anggota %}
+        <option value="{{ a.id }}">{{ a.no_anggota }} · {{ a.nama }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="label" for="jumlah_pinjaman">Jumlah Pinjaman</label>
+      <input id="jumlah_pinjaman" name="jumlah_pinjaman" type="number" min="1" step="1" class="field" required>
+    </div>
+    <div>
+      <label class="label" for="jangka_waktu">Jangka Waktu (bulan)</label>
+      <input id="jangka_waktu" name="jangka_waktu" type="number" min="1" max="60" class="field" required>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Bunga saat ini {{ pengaturan.get('suku_bunga_pinjaman','0') }}% per tahun</p>
+    <div style="display:flex;gap:12px;padding-top:8px;border-top:1px solid var(--border)">
+      <a class="btn btn-secondary" href="{{ url_for('pinjaman.index') }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M15 18l-6-6 6-6"/></svg>
+        Batal
+      </a>
+      <button class="btn btn-primary" type="submit">Simpan Pengajuan</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

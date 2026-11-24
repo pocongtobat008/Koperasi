@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Edit Anggota{% endblock %}
+{% block content %}
+
+<div class="mb-6">
+  <a href="{{ url_for('anggota.detail', id=anggota.id) }}" style="font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M15 18l-6-6 6-6"/></svg>
+    Kembali
+  </a>
+</div>
+
+<div class="page-header">
+  <div>
+    <div class="page-header-title">Edit Anggota</div>
+    <div class="page-header-sub">Perbarui data anggota {{ anggota.no_anggota }}</div>
+  </div>
+</div>
+
+<!-- Box summary: info anggota -->
+<div class="box-summary" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))" role="region" aria-label="Info anggota">
+  <div class="stat-card" style="min-height:100px;box-sizing:border-box">
+    <div class="stat-label">No Anggota</div>
+    <div class="stat-value text-mono" style="font-size:16px">{{ anggota.no_anggota }}</div>
+  </div>
+  <div class="stat-card" style="min-height:100px;box-sizing:border-box">
+    <div class="stat-label">Status</div>
+    <div class="stat-value" style="font-size:16px">{{ anggota.status|title }}</div>
+  </div>
+</div>
+
+<div class="card" style="max-width:720px;padding:28px 24px">
+  <form method="POST" class="form-grid form-grid-2">
+    <div>
+      <label class="label" for="nama">Nama Lengkap <span style="color:var(--primary-darker)">*</span></label>
+      <input id="nama" name="nama" type="text" class="field" value="{{ anggota.nama }}" required>
+    </div>
+    <div>
+      <label class="label" for="nik">NIK <span style="color:var(--primary-darker)">*</span></label>
+      <input id="nik" name="nik" type="text" class="field" value="{{ anggota.nik }}" required maxlength="16">
+    </div>
+    <div>
+      <label class="label" for="tempat_lahir">Tempat Lahir</label>
+      <input id="tempat_lahir" name="tempat_lahir" type="text" class="field" value="{{ anggota.tempat_lahir or '' }}">
+    </div>
+    <div>
+      <label class="label" for="tanggal_lahir">Tanggal Lahir</label>
+      <input id="tanggal_lahir" name="tanggal_lahir" type="date" class="field" value="{{ anggota.tanggal_lahir or '' }}">
+    </div>
+    <div>
+      <label class="label" for="jenis_kelamin">Jenis Kelamin</label>
+      <select id="jenis_kelamin" name="jenis_kelamin" class="field">
+        <option value="L" {% if anggota.jenis_kelamin == 'L' %}selected{% endif %}>Laki-laki</option>
+        <option value="P" {% if anggota.jenis_kelamin == 'P' %}selected{% endif %}>Perempuan</option>
+      </select>
+    </div>
+    <div>
+      <label class="label" for="telepon">Telepon</label>
+      <input id="telepon" name="telepon" type="tel" class="field" value="{{ anggota.telepon or '' }}">
+    </div>
+    <div style="grid-column:1/-1">
+      <label class="label" for="email">Email</label>
+      <input id="email" name="email" type="email" class="field" value="{{ anggota.email or '' }}">
+    </div>
+    <div style="grid-column:1/-1">
+      <label class="label" for="alamat">Alamat</label>
+      <textarea id="alamat" name="alamat" class="field" rows="3">{{ anggota.alamat or '' }}</textarea>
+    </div>
+    <div style="grid-column:1/-1">
+      <label class="label" for="pekerjaan">Pekerjaan</label>
+      <input id="pekerjaan" name="pekerjaan" type="text" class="field" value="{{ anggota.pekerjaan or '' }}">
+    </div>
+    <div style="grid-column:1/-1">
+      <label class="label" for="status">Status</label>
+      <select id="status" name="status" class="field">
+        <option value="aktif" {% if anggota.status == 'aktif' %}selected{% endif %}>Aktif</option>
+        <option value="non-aktif" {% if anggota.status == 'non-aktif' %}selected{% endif %}>Non-Aktif</option>
+      </select>
+    </div>
+    <div style="grid-column:1/-1;display:flex;gap:12px;padding-top:8px;border-top:1px solid var(--border);margin-top:8px">
+      <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+      <a href="{{ url_for('anggota.detail', id=anggota.id) }}" class="btn btn-secondary">Batal</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

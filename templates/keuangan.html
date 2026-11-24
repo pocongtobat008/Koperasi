@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Laporan Keuangan{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-header-title">Laporan Keuangan</div>
+    <div class="page-header-sub">Ringkasan pinjaman dan simpanan</div>
+  </div>
+</div>
+
+<!-- Box summary: 3 stat cards -->
+<div class="box-summary" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))" role="region" aria-label="Ringkasan keuangan">
+  <div class="stat-card" style="min-height:120px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#ecfdf5;border:1px solid #a7f3d0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.75" width="20" height="20"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Pinjaman Aktif</div>
+      <div class="stat-value" style="font-size:20px">Rp {{ "{:,.0f}".format(pinjaman.pinjaman_aktif or 0) }}</div>
+    </div>
+  </div>
+  <div class="stat-card" style="min-height:120px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#eff6ff;border:1px solid #bfdbfe">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.75" width="20" height="20"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Pinjaman Lunas</div>
+      <div class="stat-value" style="font-size:20px">Rp {{ "{:,.0f}".format(pinjaman.pinjaman_lunas or 0) }}</div>
+    </div>
+  </div>
+  <div class="stat-card" style="min-height:120px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#fff7ed;border:1px solid #f6e05e">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.75" width="20" height="20"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Menunggu</div>
+      <div class="stat-value">{{ pinjaman.pinjaman_menunggu or 0 }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Bar Chart: Ringkasan Simpanan per Jenis -->
+<div class="card" style="margin-top:var(--spacing-xl);padding:var(--spacing-lg) 24px">
+  <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em;margin-bottom:var(--spacing-md)">Total Simpanan per Jenis</h2>
+  <svg viewBox="0 0 600 300" style="width:100%;height:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card)" role="img" aria-label="Bar chart total simpanan per jenis">
+    <!-- Y axis -->
+    <line x1="80" y1="250" x2="80" y2="30" stroke="var(--muted)" stroke-width="1" />
+    <!-- X axis -->
+    <line x1="80" y1="250" x2="550" y2="250" stroke="var(--muted)" stroke-width="1" />
+    <!-- Y axis ticks -->
+    <g class="muted" font-size="12px" text-anchor="end" fill="var(--muted)">
+      <text x="70" y="255">0</text>
+      <text x="70" y="210">5M</text>
+      <text x="70" y="165">10M</text>
+      <text x="70" y="120">15M</text>
+      <text x="70" y="75">20M</text>
+      <text x="70" y="30">25M</text>
+    </g>
+    <!-- Bars -->
+    <g>
+      {% set savings = simpanan %}
+      {% set max_val = savings|map(attribute='total')|max|default(1000000) %}
+      {% set max_bar_h = 200 %}
+      {% for s in savings %}
+        {% set bar_h = (s.total / max_val * max_bar_h)|float %}
+        {% set y = 250 - bar_h %}
+        {% set x = 120 + loop.index0 * 80 %}
+        <rect x="{{ x }}" y="{{ y }}" width="50" height="{{ bar_h }}" fill="var(--primary)" rx="4" ry="4" opacity="0.9" />
+        <text x="{{ x + 25 }}" y="{{ y - 8 }}" text-anchor="middle" font-size="12px" fill="var(--ink)" font-weight="600">Rp {{ "{:,.0f}".format(s.total) }}</text>
+        <text x="{{ x + 25 }}" y="265" text-anchor="middle" font-size="12px" fill="var(--muted)">{{ s.jenis_nama }}</text>
+      {% endfor %}
+    </g>
+    <!-- Chart legend -->
+    <text x="80" y="20" font-size="16px" fill="var(--ink)" font-weight="600">Total Simpanan per Jenis (Rp)</text>
+  </svg>
+</div>
+
+<!-- Ringkasan Simpanan table -->
+<div class="card table-wrap" style="margin-top:var(--spacing-xl)">
+  <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border)">
+    <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em">Detail Ringkasan Simpanan</h2>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Jenis Simpanan</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in simpanan %}
+      <tr>
+        <td style="font-weight:500">{{ s.jenis_nama }}</td>
+        <td style="font-weight:700;color:var(--good)">Rp {{ "{:,.0f}".format(s.total or 0) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

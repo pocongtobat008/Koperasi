@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+
+# Runtime data and secrets
+data/
+*.db
+*.sqlite
+*.sqlite3
+.env
+.env.*
+*.pem
+*.key
+credentials*.json
+service-account*.json
+
+# Backups and generated files
+backup*/
+*.bak
+*.bak.*
+*.log
+*.sha256
+*.pyc
+
+# Uploaded/private user content
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store

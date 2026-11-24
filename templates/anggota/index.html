@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block page_title %}Anggota{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-header-title">Daftar Anggota</div>
+    <div class="page-header-sub">Kelola data anggota koperasi</div>
+  </div>
+  {% if current_user.role == 'admin' %}
+  <a class="btn btn-primary" href="{{ url_for('anggota.tambah') }}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 4v16m8-8H4"/></svg>
+    Tambah Anggota
+  </a>
+  {% endif %}
+</div>
+
+<div class="card">
+  <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em">Data Anggota</h2>
+      <p style="font-size:13px;color:var(--muted);margin-top:4px">{{ anggota|length }} terdaftar</p>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>No Anggota</th>
+          <th>Name</th>
+          <th>Telepon</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in anggota %}
+        <tr>
+          <td class="text-mono" style="font-weight:600">{{ a.no_anggota }}</td>
+          <td style="font-weight:500">{{ a.nama }}</td>
+          <td style="color:var(--muted)">{{ a.telepon or '-' }}</td>
+          <td>
+            <span class="badge {% if a.status == 'aktif' %}badge-good{% else %}badge-neutral{% endif %}">
+              {{ a.status|title }}
+            </span>
+          </td>
+          <td>
+            <div style="display:flex;gap:8px;align-items:center">
+              <a href="{{ url_for('anggota.detail', id=a.id) }}" class="btn btn-secondary btn-xs">Detail</a>
+              {% if current_user.role == 'admin' %}
+              <a href="{{ url_for('anggota.edit', id=a.id) }}" class="btn btn-secondary btn-xs">Edit</a>
+              <form method="post" action="{{ url_for('anggota.ubah_status', id=a.id) }}" style="display:inline">
+                <input type="hidden" name="status" value="{{ 'non-aktif' if a.status == 'aktif' else 'aktif' }}">
+                <button class="btn btn-secondary btn-xs" type="submit">{{ 'Nonaktifkan' if a.status == 'aktif' else 'Aktifkan' }}</button>
+              </form>
+              {% if current_user.username == 'superadmin' and a.status == 'non-aktif' %}
+              <form method="post" action="{{ url_for('anggota.hapus', id=a.id) }}" style="display:inline" onsubmit="return confirm('Hapus permanen anggota ini? Data yang sudah dihapus tidak dapat dipulihkan.')">
+                <button class="btn btn-danger btn-xs" type="submit">Hapus</button>
+              </form>
+              {% endif %}
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="empty-state">Belum ada anggota terdaftar</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

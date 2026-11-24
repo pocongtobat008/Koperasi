@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Catat Penarikan{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-header-title">Catat Penarikan</div>
+    <div class="page-header-sub">Catat penarikan simpanan anggota</div>
+  </div>
+</div>
+
+<div class="card" style="max-width:640px;padding:28px 24px">
+  <form method="post" class="space-y-5">
+    <div>
+      <label class="label" for="simpanan_id">Simpanan anggota</label>
+      <select id="simpanan_id" name="simpanan_id" class="field" required>
+        {% for a in anggota %}
+        <option value="{{ a.id }}">{{ a.no_anggota }} · {{ a.nama }} · {{ a.jenis_nama }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="label" for="jumlah">Jumlah</label>
+      <input id="jumlah" name="jumlah" type="number" min="1" step="1" class="field" required>
+    </div>
+    <div>
+      <label class="label" for="keterangan">Keterangan</label>
+      <textarea id="keterangan" name="keterangan" rows="3" class="field py-3"></textarea>
+    </div>
+    <div style="display:flex;gap:12px;padding-top:8px;border-top:1px solid var(--border)">
+      <a class="btn btn-secondary" href="{{ url_for('simpanan.index') }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M15 18l-6-6 6-6"/></svg>
+        Batal
+      </a>
+      <button class="btn btn-primary" type="submit">Simpan Penarikan</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

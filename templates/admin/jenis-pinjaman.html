@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Jenis Pinjaman{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-header-title">Jenis Pinjaman</div><div class="page-header-sub">Atur pilihan jenis pinjaman yang tersedia untuk pengajuan</div></div>
+</div>
+
+<div class="card" style="max-width:900px;padding:24px">
+  <form method="post" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;padding-bottom:22px;border-bottom:1px solid var(--border)">
+    <div style="flex:1;min-width:220px"><label class="label" for="nama">Tambah jenis pinjaman</label><input class="field" id="nama" name="nama" maxlength="80" placeholder="Contoh: Pinjaman Mikro" required></div>
+    <button class="btn btn-primary" type="submit">Tambah jenis</button>
+  </form>
+
+  <div style="margin-top:22px;display:grid;gap:12px">
+    {% for item in jenis_pinjaman %}
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:14px 0;border-bottom:1px solid #f1f5f9">
+      <form method="post" action="{{ url_for('auth.ubah_jenis_pinjaman', id=item.id) }}" style="display:flex;gap:10px;align-items:center;flex:1;min-width:240px">
+        <input class="field" name="nama" value="{{ item.nama }}" maxlength="80" aria-label="Nama {{ item.nama }}" required>
+        <button class="btn btn-secondary btn-xs" type="submit">Simpan</button>
+      </form>
+      <form method="post" action="{{ url_for('auth.toggle_jenis_pinjaman', id=item.id) }}">
+        <button class="btn {% if item.aktif %}btn-secondary{% else %}btn-primary{% endif %}" type="submit">{{ 'Nonaktifkan' if item.aktif else 'Aktifkan' }}</button>
+      </form>
+      <span class="badge {% if item.aktif %}badge-good{% else %}badge-neutral{% endif %}">{{ 'Aktif' if item.aktif else 'Arsip' }}</span>
+    </div>
+    {% else %}<div class="empty-state">Belum ada jenis pinjaman.</div>{% endfor %}
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-top:18px">Jenis yang diarsipkan tetap tersimpan pada riwayat lama, tetapi tidak dipakai saat membuat pinjaman baru.</p>
+</div>
+{% endblock %}

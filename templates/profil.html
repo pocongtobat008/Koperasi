@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Profil & Password{% endblock %}
+{% block page_title %}Profil & Password{% endblock %}
+{% block content %}
+<div class="page-header" style="margin-bottom:24px">
+  <div>
+    <div class="eyebrow">Akun saya</div>
+    <h1 style="margin:4px 0 0">Profil & Password</h1>
+    <p style="color:var(--muted);margin:8px 0 0">Kelola akses akun dari satu tempat.</p>
+  </div>
+</div>
+
+<div class="dash-bottom" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--spacing-md);align-items:start">
+  <section class="card" aria-labelledby="profile-heading">
+    <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border)">
+      <h2 id="profile-heading" style="font-size:18px;font-weight:700">Informasi akun</h2>
+    </div>
+    <div style="padding:var(--spacing-lg) 24px">
+      <div class="form-grid form-grid-2" style="gap:var(--spacing-md)">
+        <div><div class="stat-label">Username</div><div style="font-weight:600;margin-top:4px">{{ 'Administrator' if user.username == 'superadmin' else user.username }}</div></div>
+        <div><div class="stat-label">Peran</div><div style="font-weight:600;margin-top:4px">{{ user.role|title }}</div></div>
+        {% if anggota %}
+        <div><div class="stat-label">Nama</div><div style="font-weight:600;margin-top:4px">{{ anggota.nama }}</div></div>
+        <div><div class="stat-label">NIK</div><div style="font-weight:600;margin-top:4px">{{ anggota.nik }}</div></div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="password-heading">
+    <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border)">
+      <h2 id="password-heading" style="font-size:18px;font-weight:700">Ganti password</h2>
+      <p style="color:var(--muted);font-size:13px;margin:6px 0 0">Gunakan minimal 6 karakter.</p>
+    </div>
+    <form method="post" style="padding:var(--spacing-lg) 24px">
+      <div class="form-group"><label for="old_password">Password saat ini</label><input class="field" id="old_password" name="old_password" type="password" autocomplete="current-password" required></div>
+      <div class="form-group"><label for="new_password">Password baru</label><input class="field" id="new_password" name="new_password" type="password" autocomplete="new-password" minlength="6" required></div>
+      <div class="form-group"><label for="confirm_password">Ulangi password baru</label><input class="field" id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" minlength="6" required></div>
+      <button class="btn btn-primary" type="submit" style="min-height:44px">Simpan password</button>
+    </form>
+  </section>
+</div>
+
+{% if current_user.role == 'admin' %}
+<section class="card" style="margin-top:var(--spacing-md)" aria-labelledby="reset-heading">
+  <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border)">
+    <h2 id="reset-heading" style="font-size:18px;font-weight:700">Reset password anggota</h2>
+    <p style="color:var(--muted);font-size:13px;margin:6px 0 0">Password anggota akan dikembalikan ke default <strong>123456</strong>.</p>
+  </div>
+  <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;min-width:620px">
+      <thead><tr><th style="text-align:left;padding:12px 24px">Nama</th><th style="text-align:left;padding:12px 24px">No. Anggota</th><th style="text-align:left;padding:12px 24px">NIK</th><th style="text-align:right;padding:12px 24px">Aksi</th></tr></thead>
+      <tbody>
+      {% for item in anggota_list %}
+      <tr style="border-top:1px solid var(--border)">
+        <td style="padding:14px 24px;font-weight:600">{{ item.nama }}</td><td style="padding:14px 24px">{{ item.no_anggota }}</td><td style="padding:14px 24px">{{ item.nik }}</td>
+        <td style="padding:14px 24px;text-align:right"><form method="post" action="{{ url_for('auth.admin_reset_password_anggota', id=item.id) }}" onsubmit="return confirm('Reset password anggota ini ke 123456?')"><button class="btn btn-secondary btn-sm" type="submit" style="min-height:44px">Reset ke 123456</button></form></td>
+      </tr>
+      {% else %}<tr><td colspan="4" style="padding:24px;text-align:center;color:var(--muted)">Belum ada anggota.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+<style>
+@media (max-width: 720px) {
+  .dash-bottom { grid-template-columns: 1fr !important; }
+  .page-header h1 { font-size: 24px; }
+  .card form { padding-left: 16px !important; padding-right: 16px !important; }
+}
+</style>
+{% endblock %}

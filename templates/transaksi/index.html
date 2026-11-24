@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Transaksi{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-header-title">Transaksi</div>
+    <div class="page-header-sub">Riwayat setoran dan penarikan simpanan</div>
+  </div>
+</div>
+
+<!-- Box summary: ringkasan transaksi -->
+<div class="box-summary" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))" role="region" aria-label="Ringkasan transaksi">
+  <div class="stat-card" style="min-height:110px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#ecfdf5;border:1px solid #a7f3d0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.75" width="20" height="20"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Total Transaksi</div>
+      <div class="stat-value">{{ transaksi|length }}</div>
+      <div class="stat-hint">Setoran & penarikan</div>
+    </div>
+  </div>
+  <div class="stat-card" style="min-height:110px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#eff6ff;border:1px solid #bfdbfe">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.75" width="20" height="20"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Setoran</div>
+      <div class="stat-value" style="color:var(--good)">{{ stats.setor or 0 }}</div>
+      <div class="stat-hint" style="color:var(--good)">Rp {{ "{:,.0f}".format(stats.nominal_setor or 0) }}</div>
+    </div>
+  </div>
+  <div class="stat-card" style="min-height:110px;box-sizing:border-box">
+    <div class="stat-icon" style="background:#fef2f2;border:1px solid #f87171">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.75" width="20" height="20"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Penarikan</div>
+      <div class="stat-value" style="color:var(--bad)">{{ stats.tarik or 0 }}</div>
+      <div class="stat-hint" style="color:var(--bad)">Rp {{ "{:,.0f}".format(stats.nominal_tarik or 0) }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em">Riwayat Transaksi</h2>
+      <p style="font-size:13px;color:var(--muted);margin-top:4px">{{ transaksi|length }} transaksi tercatat</p>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Tanggal</th>
+          <th>Anggota</th>
+          <th>Jenis</th>
+          <th>Nominal</th>
+          <th>Petugas</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in transaksi %}
+        <tr>
+          <td style="white-space:nowrap">{{ t.tanggal }}</td>
+          <td>
+            <div style="font-weight:500;font-size:14px">{{ t.nama }}</div>
+            <div style="font-size:11px;color:var(--muted)">{{ t.no_anggota }}</div>
+          </td>
+          <td>
+            <span class="badge {% if t.jenis_transaksi=='setor' %}badge-good{% else %}badge-bad{% endif %}">
+              {{ t.jenis_transaksi|title }}
+            </span>
+            <span class="badge badge-neutral" style="margin-left:4px">{{ t.jenis_nama }}</span>
+          </td>
+          <td style="font-weight:700;color:{% if t.jenis_transaksi=='setor' %}var(--good){% else %}var(--bad){% endif %}">
+            {% if t.jenis_transaksi=='setor' %}+{% else %}-{% endif %}Rp {{ "{:,.0f}".format(t.jumlah) }}
+          </td>
+          <td style="color:var(--muted)">{{ t.petugas or '-' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="empty-state">Belum ada data transaksi</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

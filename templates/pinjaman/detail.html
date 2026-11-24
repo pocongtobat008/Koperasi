@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Detail Pinjaman{% endblock %}
+{% block content %}
+
+<div class="mb-6">
+  <a href="{{ url_for('pinjaman.index') }}" style="font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M15 18l-6-6 6-6"/></svg>
+    Kembali
+  </a>
+</div>
+
+<!-- Box summary: ringkasan pinjaman -->
+<div class="box-summary" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))" role="region" aria-label="Ringkasan pinjaman">
+  <div class="stat-card" style="min-height:100px;box-sizing:border-box">
+    <div class="stat-label">Nilai Awal</div>
+    <div class="stat-value" style="font-size:16px">Rp {{ "{:,.0f}".format(pinjaman.jumlah_pinjaman) }}</div>
+  </div>
+  <div class="stat-card" style="min-height:100px;box-sizing:border-box">
+    <div class="stat-label">Sisa</div>
+    <div class="stat-value" style="font-size:16px">Rp {{ "{:,.0f}".format(pinjaman.sisa_pinjaman) }}</div>
+  </div>
+  <div class="stat-card" style="min-height:100px;box-sizing:border-box">
+    <div class="stat-label">Cicilan</div>
+    <div class="stat-value" style="font-size:16px">Rp {{ "{:,.0f}".format(pinjaman.jumlah_cicilan) }}</div>
+  </div>
+  <div class="stat-card" style="min-height:100px;box-sizing:border-box">
+    <div class="stat-label">Status</div>
+    <div class="stat-value" style="font-size:16px">{{ pinjaman.status|title }}</div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:var(--spacing-md)">
+  <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border)">
+    <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em">Detail Pinjaman</h2>
+    <div style="margin-top:4px">
+      <span class="badge {% if pinjaman.status=='disetujui' %}badge-good{% elif pinjaman.status=='diajukan' %}badge-warn{% else %}badge-neutral{% endif %}">{{ pinjaman.status|title }}</span>
+    </div>
+  </div>
+  <div style="padding:var(--spacing-lg) 24px">
+    <div class="form-grid form-grid-3">
+      <div><div class="stat-label">Anggota</div><div style="font-weight:600">{{ pinjaman.nama }}</div></div>
+      <div><div class="stat-label">No Pinjaman</div><div style="font-weight:600">{{ pinjaman.no_pinjaman }}</div></div>
+      <div><div class="stat-label">Jenis Pinjaman</div><div style="font-weight:600">{{ pinjaman.jenis_nama or 'Belum ditentukan' }}</div></div>
+      <div><div class="stat-label">Tanggal Jatuh Tempo</div><div style="font-weight:600">{{ pinjaman.tanggal_jatuh_tempo or '-' }}</div></div>
+    </div>
+  </div>
+</div>
+
+{% if current_user.role=='admin' and pinjaman.status=='diajukan' %}
+<div class="card" style="margin-top:var(--spacing-md);padding:24px">
+  <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em;margin-bottom:var(--spacing-sm)">Tindakan Admin</h2>
+  <div style="display:flex;gap:12px">
+    <form method="post" action="{{ url_for('pinjaman.setujui', id=pinjaman.id) }}">
+      <button class="btn btn-primary" type="submit">Setujui Pinjaman</button>
+    </form>
+    <form method="post" action="{{ url_for('pinjaman.tolak', id=pinjaman.id) }}">
+      <button class="btn btn-secondary" type="submit">Tolak Pinjaman</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+<div class="card table-wrap" style="margin-top:var(--spacing-md)">
+  <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border)">
+    <h2 style="font-size:18px;font-weight:700;letter-spacing:-.01em">Jadwal Cicilan</h2>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Cicilan</th>
+        <th>Jatuh Tempo</th>
+        <th>Jumlah</th>
+        <th>Status</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in cicilan %}
+      <tr>
+        <td>Ke-{{ c.cicilan_ke }}</td>
+        <td style="white-space:nowrap">{{ c.tanggal_jatuh_tempo }}</td>
+        <td style="font-weight:600">Rp {{ "{:,.0f}".format(c.jumlah_cicilan) }}</td>
+        <td>
+          <span class="badge {% if c.status=='lunas' %}badge-good{% else %}badge-warn{% endif %}">{{ c.status|title }}</span>
+        </td>
+        <td>
+          {% if c.status=='belum' %}
+          <form method="post" action="{{ url_for('pinjaman.bayar_cicilan', id=c.id) }}">
+            <button class="text-sm font-semibold text-primary hover:underline" type="submit">Catat Bayar</button>
+          </form>
+          {% else %}
+          <span class="text-sm text-slate-500">{{ c.tanggal_bayar or '-' }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="empty-state">Belum ada cicilan</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
