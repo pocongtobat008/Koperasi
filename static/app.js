@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  var state = { busy: false, request: 0 };
+  var state = { busy: false, request: 0, timer: null, controller: null };
   var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function isInternal(url) {
@@ -26,7 +26,7 @@
     var button = document.getElementById('hamburger-btn');
     if (sidebar) sidebar.classList.remove('open');
     if (overlay) overlay.classList.remove('open');
-    if (button) button.setAttribute('aria-expanded', 'false');
+    if (button) { button.setAttribute('aria-expanded', 'false'); button.setAttribute('aria-label', 'Buka menu'); }
   }
 
   function showError(message) {
@@ -58,6 +58,7 @@
     closeSidebar();
     window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
     bindContent();
+    enhanceSelects();
   }
 
   function updateActiveNav(url) {
@@ -72,12 +73,23 @@
     options = options || {};
     if (state.busy) return;
     var requestId = ++state.request;
+    if (state.controller) state.controller.abort();
+    if (state.timer) window.clearTimeout(state.timer);
+    state.controller = window.AbortController ? new AbortController() : null;
     setBusy(true);
+    state.timer = window.setTimeout(function () {
+      if (requestId === state.request) {
+        if (state.controller) state.controller.abort();
+        setBusy(false);
+        showError('Waktu muat habis. Periksa koneksi lalu coba lagi.');
+      }
+    }, 10000);
     try {
       var response = await fetch(url, {
         method: options.method || 'GET',
         body: options.body,
         credentials: 'same-origin',
+        signal: state.controller ? state.controller.signal : undefined,
         headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' }
       });
       if (requestId !== state.request) return;
@@ -87,7 +99,12 @@
     } catch (error) {
       if (requestId === state.request) showError('Periksa koneksi lalu coba lagi.');
     } finally {
-      if (requestId === state.request) setBusy(false);
+      if (requestId === state.request) {
+        if (state.timer) window.clearTimeout(state.timer);
+        state.timer = null;
+        state.controller = null;
+        setBusy(false);
+      }
     }
   }
 
@@ -112,14 +129,27 @@
     });
   }
 
+  function cancelNavigation() {
+    state.request += 1;
+    if (state.controller) state.controller.abort();
+    state.controller = null;
+    if (state.timer) window.clearTimeout(state.timer);
+    state.timer = null;
+    setBusy(false);
+  }
+
   window.toggleSidebar = function () {
+    cancelNavigation();
     var sidebar = document.getElementById('sidebar');
     var overlay = document.getElementById('sidebar-overlay');
     var button = document.getElementById('hamburger-btn');
-    if (!sidebar || !overlay || !button) return;
-    var open = sidebar.classList.toggle('open');
+    if (!sidebar || !overlay || !button) return false;
+    var open = !sidebar.classList.contains('open');
+    sidebar.classList.toggle('open', open);
     overlay.classList.toggle('open', open);
     button.setAttribute('aria-expanded', open ? 'true' : 'false');
+    button.setAttribute('aria-label', open ? 'Tutup menu' : 'Buka menu');
+    return false;
   };
 
   window.addEventListener('popstate', function () { loadPage(window.location.href, { push: false }); });
@@ -131,3 +161,8 @@
   });
   document.addEventListener('DOMContentLoaded', function () { bindContent(); updateActiveNav(window.location.href); });
 })();
+
+
+// Searchable dropdowns without external dependencies.
+function enhanceSelects() { document.querySelectorAll('select:not([data-search-ready])').forEach(function(select) { select.setAttribute('data-search-ready','true'); if (select.options.length < 3) return; var wrap=document.createElement('div'); wrap.className='select-search-wrap'; select.parentNode.insertBefore(wrap,select); wrap.appendChild(select); var input=document.createElement('input'); input.className='field select-search'; input.placeholder='Cari pilihan...'; input.setAttribute('aria-label','Cari pilihan'); wrap.insertBefore(input,select); input.addEventListener('input',function(){ var q=input.value.toLowerCase(); Array.from(select.options).forEach(function(o){o.hidden=q && o.text.toLowerCase().indexOf(q)<0;}); }); }); }
+document.addEventListener('DOMContentLoaded', function () { enhanceSelects(); });

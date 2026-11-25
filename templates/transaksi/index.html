@@ -9,6 +9,8 @@
   </div>
 </div>
 
+<form method="get" class="list-toolbar" role="search"><input class="field" name="q" value="{{ q|default('') }}" placeholder="Cari..." aria-label="Cari data"><button class="btn btn-secondary" type="submit">Cari</button>{% if q %}<a class="btn btn-secondary" href="?">Reset</a>{% endif %}</form>
+
 <!-- Box summary: ringkasan transaksi -->
 <div class="box-summary" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))" role="region" aria-label="Ringkasan transaksi">
   <div class="stat-card" style="min-height:110px;box-sizing:border-box">
@@ -87,5 +89,7 @@
     </table>
   </div>
 </div>
+
+<nav class="pagination" aria-label="Navigasi halaman">{% if page > 1 %}<a class="btn btn-secondary btn-xs" href="?page={{ page - 1 }}{% if q %}&q={{ q|urlencode }}{% endif %}">‹ Sebelumnya</a>{% endif %}<span>Halaman {{ page }} / {{ total_pages or 1 }}</span>{% if page < total_pages %}<a class="btn btn-secondary btn-xs" href="?page={{ page + 1 }}{% if q %}&q={{ q|urlencode }}{% endif %}">Berikutnya ›</a>{% endif %}</nav>
 
 {% endblock %}

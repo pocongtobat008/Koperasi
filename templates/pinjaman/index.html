@@ -5,13 +5,15 @@
 <div class="page-header">
   <div>
     <div class="page-header-title">Pinjaman</div>
-    <div class="page-header-sub">Kelola pengajuan dan status pinjaman</div>
+    <div class="page-header-sub">Ajukan pinjaman dan pantau persetujuan admin</div>
   </div>
-  {% if current_user.role == 'admin' %}<a class="btn btn-primary" href="{{ url_for('pinjaman.ajukan') }}">
+  <a class="btn btn-primary" href="{{ url_for('pinjaman.ajukan') }}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 4v16m8-8H4"/></svg>
     Ajukan Pinjaman
-  </a>{% endif %}
+  </a>
 </div>
+
+<form method="get" class="list-toolbar" role="search"><input class="field" name="q" value="{{ q|default('') }}" placeholder="Cari..." aria-label="Cari data"><button class="btn btn-secondary" type="submit">Cari</button>{% if q %}<a class="btn btn-secondary" href="?">Reset</a>{% endif %}</form>
 
 <!-- Box summary: ringkasan pinjaman -->
 <div class="box-summary" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))" role="region" aria-label="Ringkasan pinjaman">
@@ -92,5 +94,7 @@
     </table>
   </div>
 </div>
+
+<nav class="pagination" aria-label="Navigasi halaman">{% if page > 1 %}<a class="btn btn-secondary btn-xs" href="?page={{ page - 1 }}{% if q %}&q={{ q|urlencode }}{% endif %}">‹ Sebelumnya</a>{% endif %}<span>Halaman {{ page }} / {{ total_pages or 1 }}</span>{% if page < total_pages %}<a class="btn btn-secondary btn-xs" href="?page={{ page + 1 }}{% if q %}&q={{ q|urlencode }}{% endif %}">Berikutnya ›</a>{% endif %}</nav>
 
 {% endblock %}

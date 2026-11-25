@@ -15,6 +15,8 @@
   {% endif %}
 </div>
 
+<form method="get" class="list-toolbar" role="search"><input class="field" name="q" value="{{ q|default('') }}" placeholder="Cari anggota..." aria-label="Cari anggota"><button class="btn btn-secondary" type="submit">Cari</button>{% if q %}<a class="btn btn-secondary" href="?">Reset</a>{% endif %}</form>
+
 <div class="card">
   <div style="padding:var(--spacing-lg) 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
     <div>
@@ -69,5 +71,7 @@
     </table>
   </div>
 </div>
+
+<nav class="pagination" aria-label="Navigasi halaman">{% if page > 1 %}<a class="btn btn-secondary btn-xs" href="?page={{ page - 1 }}{% if q %}&q={{ q|urlencode }}{% endif %}">‹ Sebelumnya</a>{% endif %}<span>Halaman {{ page }} / {{ total_pages or 1 }}</span>{% if page < total_pages %}<a class="btn btn-secondary btn-xs" href="?page={{ page + 1 }}{% if q %}&q={{ q|urlencode }}{% endif %}">Berikutnya ›</a>{% endif %}</nav>
 
 {% endblock %}
